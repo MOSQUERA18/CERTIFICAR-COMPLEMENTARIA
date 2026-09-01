@@ -1,8 +1,82 @@
     import { chromium } from "playwright";
     import dotenv from "dotenv";
     import { leerFichas } from "./datos/excel.js";
+    import XLSX from "xlsx";
+    import path from "path";
+    import os from "os";
+    import fs from "fs";
 
     dotenv.config();
+    // =========================
+    // GUARDAR RESULTADO EN EXCEL
+    // =========================
+
+    function guardarResultado(ficha, resultado) {
+
+        const rutaDescargas = path.join(
+            os.homedir(),
+            "Downloads"
+        );
+
+        const rutaArchivo = path.join(
+            rutaDescargas,
+            "resultadoscertificacioncomplementaria.xlsx"
+        );
+
+        let datos = [];
+
+        // Si el archivo ya existe, leerlo
+        if (fs.existsSync(rutaArchivo)) {
+
+            const workbookExistente = XLSX.readFile(
+                rutaArchivo
+            );
+
+            const nombreHoja =
+                workbookExistente.SheetNames[0];
+
+            const hojaExistente =
+                workbookExistente.Sheets[nombreHoja];
+
+            datos = XLSX.utils.sheet_to_json(
+                hojaExistente
+            );
+        }
+
+        // Agregar nuevo resultado
+        datos.push({
+            FICHA: ficha,
+            RESULTADO: resultado
+        });
+
+        // Crear nuevo libro
+        const workbook = XLSX.utils.book_new();
+
+        const hoja = XLSX.utils.json_to_sheet(
+            datos
+        );
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            hoja,
+            "Resultados"
+        );
+
+        // Guardar
+        XLSX.writeFile(
+            workbook,
+            rutaArchivo
+        );
+
+        console.log(
+            "Resultado guardado en:",
+            rutaArchivo
+        );
+    }
+
+
+
+
 
     async function iniciar() {
 
@@ -146,6 +220,19 @@
 
     const frame1 = page.frameLocator("#contenido");
 
+    // =========================
+    // PROCESAR TODAS LAS FICHAS
+    // =========================
+
+    for (let i = 0; i < fichas.length; i++) {
+
+        const numeroFicha = fichas[i];
+
+        console.log("====================================");
+        console.log(`Procesando ficha ${i + 1} de ${fichas.length}`);
+        console.log(`Ficha: ${numeroFicha}`);
+        console.log("====================================");
+
 
     // =========================
     // ABRIR CONSULTA DE FICHA
@@ -158,10 +245,6 @@
     await page.waitForTimeout(2000);
 
 
-
-    const numeroFicha = fichas[0];
-
-    console.log("Ficha a consultar:", numeroFicha);
 
     // =========================
     // BUSCAR FRAME DE LA MODAL
@@ -295,9 +378,68 @@
     }
 
 
+        // =========================
+        // CERTIFICAR APRENDICES
+        // =========================
+
+        const btnCertificarAprendices = frame1.locator(
+            "#frmContenido\\:cmdlnkAprobar"
+        );
+
+        await btnCertificarAprendices.waitFor({
+            state: "visible",
+            timeout: 10000
+        });
+
+        await btnCertificarAprendices.click();
+
+        console.log("Botón 'Certificar Aprendices' presionado.");
 
 
+    //     // =========================
+    // // ESPERAR RESULTADO
+    // // =========================
 
+    // const mensajeResultado = frame1.locator(
+    //     "#messages"
+    // );
+
+    // await mensajeResultado.waitFor({
+    //     state: "visible",
+    //     timeout: 15000
+    // });
+
+    // const resultado = (
+    //     await mensajeResultado.textContent()
+    // ).trim();
+
+    // console.log(
+    //     "Resultado de la certificación:",
+    //     resultado
+    // );
+
+    // // =========================
+    // // GUARDAR RESULTADO
+    // // =========================
+
+    // guardarResultado(
+    //     numeroFicha,
+    //     resultado
+    // );
+    
+    console.log(
+        `Ficha ${numeroFicha} terminada y guardada.`
+    );
+
+
+    // =========================
+    // ESPERA ANTES DE SIGUIENTE FICHA
+    // =========================
+
+    await page.waitForTimeout(1500);
+
+
+    }
     }
 
     iniciar();
