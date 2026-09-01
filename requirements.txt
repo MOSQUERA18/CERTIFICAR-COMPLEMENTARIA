@@ -1,4 +1,29 @@
-playwright
-dotenv
-xlsx
-npx playwright install chromium
+﻿# ============================================================
+#  CERTIFICAR COMPLEMENTARIA — Requirements
+#  Python 3.11+  |  SENA 2026
+# ============================================================
+
+# -- Interfaz grafica (incluida en Python, no requiere pip) --
+# tkinter  ->  viene con la instalacion estandar de Python
+
+# -- Lectura de archivos Excel --------------------------------
+openpyxl>=3.1.0
+
+# -- (Opcional) Para empaquetar en .exe ----------------------
+# pyinstaller>=6.0
+
+# ============================================================
+#  Node.js  (el automatizador real usa index_v2.js)
+# ============================================================
+#  Instalar Node.js desde: https://nodejs.org  (version LTS)
+#
+#  Luego, en la carpeta del proyecto ejecutar:
+#
+#    npm install
+#    npx playwright install chromium
+#
+#  Dependencias Node (declaradas en package.json):
+#    - playwright
+#    - xlsx
+#    - dotenv
+# ============================================================

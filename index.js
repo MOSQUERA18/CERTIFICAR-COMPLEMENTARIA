@@ -396,40 +396,72 @@
         console.log("Botón 'Certificar Aprendices' presionado.");
 
 
-    //     // =========================
-    // // ESPERAR RESULTADO
-    // // =========================
+        // =========================
+// BUSCAR MENSAJE DE RESULTADO
+// =========================
 
-    // const mensajeResultado = frame1.locator(
-    //     "#messages"
-    // );
+const mensajeResultado = frame1.locator(
+    '[id$=":messages"]'
+);
 
-    // await mensajeResultado.waitFor({
-    //     state: "visible",
-    //     timeout: 15000
-    // });
+try {
 
-    // const resultado = (
-    //     await mensajeResultado.textContent()
-    // ).trim();
+    await mensajeResultado.first().waitFor({
+        state: "visible",
+        timeout: 15000
+    });
 
-    // console.log(
-    //     "Resultado de la certificación:",
-    //     resultado
-    // );
+    const resultado = (
+        await mensajeResultado.first().innerText()
+    ).trim();
 
-    // // =========================
-    // // GUARDAR RESULTADO
-    // // =========================
-
-    // guardarResultado(
-    //     numeroFicha,
-    //     resultado
-    // );
-    
     console.log(
-        `Ficha ${numeroFicha} terminada y guardada.`
+        "===================================="
     );
+
+    console.log(
+        "RESULTADO DE LA CERTIFICACIÓN:"
+    );
+
+    console.log(
+        resultado
+    );
+
+    console.log(
+        "===================================="
+    );
+
+
+    // =========================
+    // GUARDAR RESULTADO EN EXCEL
+    // =========================
+
+    guardarResultado(
+        numeroFicha,
+        resultado
+    );
+
+    console.log(
+        `Resultado de ficha ${numeroFicha} guardado correctamente.`
+    );
+
+} catch (error) {
+
+    console.log(
+        `No se encontró el mensaje de resultado para la ficha ${numeroFicha}.`
+    );
+
+    console.log(
+        "Error:",
+        error.message
+    );
+
+    // Guardar igualmente el error en Excel
+    guardarResultado(
+        numeroFicha,
+        "No se encontró mensaje de resultado"
+    );
+}
 
 
     // =========================
@@ -440,6 +472,24 @@
 
 
     }
+
+    // =========================
+    // NO HAY MÁS FICHAS
+    // =========================
+
+    console.log("====================================");
+    console.log("NO EXISTEN MÁS FICHAS POR CERTIFICAR");
+    console.log("Todas las fichas del Excel fueron procesadas.");
+    console.log("====================================");
+
+    // Esperar un momento para que se vea el mensaje
+    await page.waitForTimeout(2000);
+
+    // Cerrar pestaña
+    await page.close();
+
+    // Cerrar navegador
+    await browser.close();
     }
 
     iniciar();
