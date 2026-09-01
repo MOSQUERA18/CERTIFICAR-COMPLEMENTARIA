@@ -1,2 +1,4 @@
 playwright
 dotenv
+xlsx
+npx playwright install chromium

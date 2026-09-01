@@ -9,8 +9,10 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "type": "module",
   "dependencies": {
     "dotenv": "^17.4.2",
-    "playwright": "^1.62.1"
+    "playwright": "^1.62.1",
+    "xlsx": "^0.18.5"
   }
 }
